@@ -71,8 +71,11 @@
     const script = document.createElement('script');
     script.id = 'lsbJsonpScript';
     script.async = true;
-    script.src = LEARNING_SOURCE_WEB_APP_URL +
-      '?mode=learning&spreadsheetId=1cKOZq5tHugH0YQ24gwQEvnkxN6y9VmOHER5ZeQNjFE0&callback=window.receiveLearningSourceBox&_=' + Date.now();
+script.src =
+  LEARNING_SOURCE_WEB_APP_URL +
+  '?mode=learningBox' +
+  '&callback=receiveLearningSourceBox' +
+  '&_=' + Date.now();
 
     script.onerror = () => {
       clearTimeout(window.lsbLoadTimer);

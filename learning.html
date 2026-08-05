@@ -1833,25 +1833,53 @@ function getMarkerLabelClass(index) {
       `).join('');
     }
 
-    function openDetail(id, visitType='detail') {
-      setLoading(true);
+function openDetail(id, visitType = 'detail') {
+  setLoading(true);
 
-      jsonpRequest(
-        'learningDetail',
-        {
-          id: id,
-          visitType: visitType || '',
-          sessionId: getSessionId(),
-          userAgent: navigator.userAgent,
-          spreadsheetId: activeSpreadsheetId
-        },
-        function(res) {
-          renderDetail(res.source);
-          setLoading(false);
-        },
-        showError
-      );
+  jsonpRequest(
+    'learningDetail',
+    {
+      sourceId: id,
+      visitType: visitType,
+      sessionId: getSessionId(),
+      userAgent: navigator.userAgent
+    },
+
+    function(result) {
+      setLoading(false);
+
+      const data =
+        result && result.data
+          ? result.data
+          : result;
+
+      if (!data || data.success === false) {
+        showError(
+          new Error(
+            data && data.message
+              ? data.message
+              : 'ไม่สามารถโหลดรายละเอียดได้'
+          )
+        );
+        return;
+      }
+
+      if (!data.source) {
+        showError(
+          new Error('ไม่พบข้อมูลแหล่งเรียนรู้')
+        );
+        return;
+      }
+
+      renderDetail(data.source);
+    },
+
+    function(error) {
+      setLoading(false);
+      showError(error);
     }
+  );
+}
 
 function renderDetail(s) {
   stopDetailSlider();

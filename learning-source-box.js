@@ -3,7 +3,7 @@
 
   /* เปลี่ยน URL นี้เป็น URL /exec ของโปรเจกต์ฐานแหล่งเรียนรู้ */
   const LEARNING_SOURCE_WEB_APP_URL =
-    'https://script.google.com/macros/s/AKfycbzFDJkwIHcxxsu9aJfhIgYQsKpp2aD_c-5wzMvWXTiRfc7FiztMuU81NEmd0Tb5N3DH/exec';
+    'https://script.google.com/macros/s/AKfycbysVQs7ILw3_B9MrUufO0Ezf5OmqZ2yFhp2QBlmE0qtwaADdBzPA0dDO12cKSM9QJDFbw/exec'; /* แหล่งเรียนรู้ ตำบล*/
 
   let sources = [];
   let pageIndex = 0;

@@ -1523,30 +1523,45 @@ let detailSlideCount = 0;
       document.head.appendChild(script);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      bindEvents();
-      loadLearningSheetList();
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  bindEvents();
 
-    function bindEvents() {
-      ['searchInput','categoryFilter'].forEach(id => {
-        document.getElementById(id).addEventListener('input', applyFilters);
-      });
+  activeSpreadsheetId = DEFAULT_LEARNING_SPREADSHEET_ID;
 
-      document.getElementById('areaFilter').addEventListener('change', event => {
-        const sheetId = String(event.target.value || '').trim();
-        if (!sheetId || sheetId === activeSpreadsheetId) return;
+  const areaSelect = document.getElementById('areaFilter');
 
-        activeSpreadsheetId = sheetId;
-        loadPublicData(sheetId);
-      });
+  areaSelect.innerHTML = `
+    <option value="${DEFAULT_LEARNING_SPREADSHEET_ID}">
+      ข้อมูลหลัก
+    </option>
+  `;
 
-      document.getElementById('sortSelect').addEventListener('change', applyFilters);
+  areaSelect.value = DEFAULT_LEARNING_SPREADSHEET_ID;
 
-      document.querySelectorAll('.star').forEach(btn => {
-        btn.addEventListener('click', () => setRating(Number(btn.dataset.value)));
-      });
+  loadPublicData();
+});
+
+function bindEvents() {
+  ['searchInput', 'categoryFilter'].forEach(id => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.addEventListener('input', applyFilters);
     }
+  });
+
+  const sortSelect = document.getElementById('sortSelect');
+
+  if (sortSelect) {
+    sortSelect.addEventListener('change', applyFilters);
+  }
+
+  document.querySelectorAll('.star').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setRating(Number(btn.dataset.value));
+    });
+  });
+}
 
     function loadLearningSheetList() {
       setLoading(true);
@@ -1608,27 +1623,37 @@ let detailSlideCount = 0;
       );
     }
 
-    function loadPublicData(spreadsheetId) {
-      setLoading(true);
+function loadPublicData() {
+  setLoading(true);
 
-      jsonpRequest(
-        'learning',
-        {
-          spreadsheetId: spreadsheetId || activeSpreadsheetId
-        },
-        function(result) {
-          const data = result && result.data ? result.data : result;
-          appData = data || { settings: {}, sources: [], types: [] };
-          applySettings();
-          fillFilters();
-          applyFilters();
-          updateStats();
-          setLoading(false);
-          openFromQuery();
-        },
-        showError
-      );
+  jsonpRequest(
+    'learningBox',
+    {},
+    function(result) {
+      const data =
+        result && result.data
+          ? result.data
+          : result;
+
+      appData = data || {
+        settings: {},
+        sources: [],
+        types: []
+      };
+
+      applySettings();
+      fillFilters();
+      applyFilters();
+      updateStats();
+      setLoading(false);
+      openFromQuery();
+    },
+    function(error) {
+      setLoading(false);
+      showError(error);
     }
+  );
+}
 
     function applySettings() {
       const s = appData.settings || {};

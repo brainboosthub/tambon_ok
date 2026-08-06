@@ -1667,6 +1667,9 @@ function loadPublicData() {
     }
 
 function fillFilters() {
+  const areaSelect =
+    document.getElementById('areaFilter');
+
   const categorySelect =
     document.getElementById('categoryFilter');
 
@@ -1674,6 +1677,17 @@ function fillFilters() {
     ? appData.sources
     : [];
 
+  // ดึงข้อมูลจาก learning_sources คอลัมน์ I
+  // ซึ่งมีหัวตารางชื่อ area
+  const areaList = [
+    ...new Set(
+      sources
+        .map(item => String(item.area || '').trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b, 'th'));
+
+  // ดึงประเภทจากคอลัมน์ category
   const categoryList = [
     ...new Set(
       sources
@@ -1681,6 +1695,14 @@ function fillFilters() {
         .filter(Boolean)
     )
   ].sort((a, b) => a.localeCompare(b, 'th'));
+
+  areaSelect.innerHTML =
+    '<option value="">ข้อมูลหลัก</option>' +
+    areaList.map(item => `
+      <option value="${escAttr(item)}">
+        ${esc(item)}
+      </option>
+    `).join('');
 
   categorySelect.innerHTML =
     '<option value="">ทุกประเภทแหล่งเรียนรู้</option>' +

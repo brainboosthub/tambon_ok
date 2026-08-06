@@ -1542,16 +1542,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function bindEvents() {
-['searchInput', 'areaFilter', 'categoryFilter'].forEach(id => {
-  const element = document.getElementById(id);
+  ['searchInput', 'areaFilter', 'categoryFilter'].forEach(id => {
+    const element = document.getElementById(id);
 
-  if (element) {
+    if (!element) return;
+
     element.addEventListener('input', applyFilters);
     element.addEventListener('change', applyFilters);
-  }
-});
+  });
 
-  const sortSelect = document.getElementById('sortSelect');
+  const sortSelect =
+    document.getElementById('sortSelect');
 
   if (sortSelect) {
     sortSelect.addEventListener('change', applyFilters);
@@ -1623,7 +1624,47 @@ function bindEvents() {
         }
       );
     }
+function loadAreaFilter() {
+  const areaSelect =
+    document.getElementById('areaFilter');
 
+  if (!areaSelect) return;
+
+  areaSelect.innerHTML = `
+    <option value="">
+      กำลังโหลดรายการ...
+    </option>
+  `;
+
+  jsonpRequest(
+    'learningAreas',
+    {},
+    function(result) {
+      const areas = Array.isArray(result.areas)
+        ? result.areas
+        : [];
+
+      areaSelect.innerHTML =
+        '<option value="">ข้อมูลหลัก</option>' +
+        areas.map(area => `
+          <option value="${escAttr(area)}">
+            ${esc(area)}
+          </option>
+        `).join('');
+
+      console.log('รายการ I2:I ที่โหลดได้:', areas);
+    },
+    function(error) {
+      console.error('โหลดข้อมูล I2:I ไม่สำเร็จ:', error);
+
+      areaSelect.innerHTML = `
+        <option value="">
+          ข้อมูลหลัก
+        </option>
+      `;
+    }
+  );
+}
 function loadPublicData() {
   setLoading(true);
 

@@ -1542,13 +1542,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function bindEvents() {
-  ['searchInput', 'categoryFilter'].forEach(id => {
-    const element = document.getElementById(id);
+['searchInput', 'areaFilter', 'categoryFilter'].forEach(id => {
+  const element = document.getElementById(id);
 
-    if (element) {
-      element.addEventListener('input', applyFilters);
-    }
-  });
+  if (element) {
+    element.addEventListener('input', applyFilters);
+    element.addEventListener('change', applyFilters);
+  }
+});
 
   const sortSelect = document.getElementById('sortSelect');
 
@@ -1713,26 +1714,68 @@ function fillFilters() {
     `).join('');
 }
 
-    function applyFilters() {
-      const q = document.getElementById('searchInput').value.trim().toLowerCase();
-      const category = document.getElementById('categoryFilter').value;
-      const sort = document.getElementById('sortSelect').value;
+function applyFilters() {
+  const q = document
+    .getElementById('searchInput')
+    .value
+    .trim()
+    .toLowerCase();
 
-      filteredSources = appData.sources.filter(s => {
-        const text = [s.name,s.manager,s.address,s.area,s.category,s.description].join(' ').toLowerCase();
-        return (!q || text.includes(q)) &&
-          (!category || s.category === category);
-      });
+  const area =
+    document.getElementById('areaFilter').value;
 
-      filteredSources.sort((a,b) => {
-        if (sort === 'views') return Number(b.views)-Number(a.views);
-        if (sort === 'rating') return Number(b.averageRating)-Number(a.averageRating);
-        return String(a.name).localeCompare(String(b.name),'th');
-      });
+  const category =
+    document.getElementById('categoryFilter').value;
 
-      renderMarkers();
-      renderCards();
+  const sort =
+    document.getElementById('sortSelect').value;
+
+  const sources = Array.isArray(appData.sources)
+    ? appData.sources
+    : [];
+
+  filteredSources = sources.filter(source => {
+    const sourceArea =
+      String(source.area || '').trim();
+
+    const sourceCategory =
+      String(source.category || '').trim();
+
+    const text = [
+      source.name,
+      source.manager,
+      source.address,
+      source.area,
+      source.category,
+      source.description
+    ]
+      .join(' ')
+      .toLowerCase();
+
+    return (
+      (!q || text.includes(q)) &&
+      (!area || sourceArea === area) &&
+      (!category || sourceCategory === category)
+    );
+  });
+
+  filteredSources.sort((a, b) => {
+    if (sort === 'views') {
+      return Number(b.views || 0) - Number(a.views || 0);
     }
+
+    if (sort === 'rating') {
+      return Number(b.averageRating || 0) -
+        Number(a.averageRating || 0);
+    }
+
+    return String(a.name || '')
+      .localeCompare(String(b.name || ''), 'th');
+  });
+
+  renderMarkers();
+  renderCards();
+}
 
 function renderMarkers() {
   const box = document.getElementById('markers');

@@ -1523,22 +1523,14 @@ let detailSlideCount = 0;
       document.head.appendChild(script);
     }
 
-document.addEventListener('DOMContentLoaded', () => {
-  bindEvents();
+document.addEventListener("DOMContentLoaded", async () => {
 
-  activeSpreadsheetId = DEFAULT_LEARNING_SPREADSHEET_ID;
+    bindEvents();
 
-  const areaSelect = document.getElementById('areaFilter');
+    await loadAreaFilter();
 
-  areaSelect.innerHTML = `
-    <option value="${DEFAULT_LEARNING_SPREADSHEET_ID}">
-      ข้อมูลหลัก
-    </option>
-  `;
+    loadPublicData();
 
-  areaSelect.value = DEFAULT_LEARNING_SPREADSHEET_ID;
-
-  loadPublicData();
 });
 
 function bindEvents() {
@@ -2616,6 +2608,39 @@ function stopDetailSlider() {
   if (detailSlideTimer) {
     clearInterval(detailSlideTimer);
     detailSlideTimer = null;
+  }
+}
+    async function loadAreaFilter() {
+  try {
+
+    const url =
+      `${API_URL}?mode=learningAreas`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const select =
+      document.getElementById("areaFilter");
+
+    select.innerHTML =
+      '<option value="">ทุกพื้นที่</option>';
+
+    if (!data.success) return;
+
+    data.areas.forEach(area => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = area;
+      option.textContent = area;
+
+      select.appendChild(option);
+
+    });
+
+  } catch (err) {
+    console.error(err);
   }
 }
   </script>

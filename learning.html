@@ -1701,50 +1701,30 @@ function loadPublicData() {
     }
 
 function fillFilters() {
-  const areaSelect =
-    document.getElementById('areaFilter');
 
-  const categorySelect =
-    document.getElementById('categoryFilter');
+    const categorySelect =
+        document.getElementById("categoryFilter");
 
-  const sources = Array.isArray(appData.sources)
-    ? appData.sources
-    : [];
+    const sources = Array.isArray(appData.sources)
+        ? appData.sources
+        : [];
 
-  // ดึงข้อมูลจาก learning_sources คอลัมน์ I
-  // ซึ่งมีหัวตารางชื่อ area
-  const areaList = [
-    ...new Set(
-      sources
-        .map(item => String(item.area || '').trim())
-        .filter(Boolean)
-    )
-  ].sort((a, b) => a.localeCompare(b, 'th'));
+    const categoryList = [
+        ...new Set(
+            sources
+                .map(item => String(item.category || "").trim())
+                .filter(Boolean)
+        )
+    ].sort((a,b)=>a.localeCompare(b,"th"));
 
-  // ดึงประเภทจากคอลัมน์ category
-  const categoryList = [
-    ...new Set(
-      sources
-        .map(item => String(item.category || '').trim())
-        .filter(Boolean)
-    )
-  ].sort((a, b) => a.localeCompare(b, 'th'));
+    categorySelect.innerHTML =
+        '<option value="">ทุกประเภทแหล่งเรียนรู้</option>' +
+        categoryList.map(item => `
+            <option value="${escAttr(item)}">
+                ${esc(item)}
+            </option>
+        `).join("");
 
-  areaSelect.innerHTML =
-    '<option value="">ข้อมูลหลัก</option>' +
-    areaList.map(item => `
-      <option value="${escAttr(item)}">
-        ${esc(item)}
-      </option>
-    `).join('');
-
-  categorySelect.innerHTML =
-    '<option value="">ทุกประเภทแหล่งเรียนรู้</option>' +
-    categoryList.map(item => `
-      <option value="${escAttr(item)}">
-        ${esc(item)}
-      </option>
-    `).join('');
 }
 
 function applyFilters() {
